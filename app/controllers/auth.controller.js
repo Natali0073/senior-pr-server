@@ -43,7 +43,7 @@ exports.login = (req, res) => {
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
-          message: "Invalid Password!"
+          message: "Credentials not found!"
         });
       }
       try {
@@ -64,8 +64,9 @@ exports.login = (req, res) => {
     });
 };
 
-exports.logout = async (req, res) => {
+exports.logout = (req, res) => {
   return res
-  .clearCookie('token')
-  .status(200)
+    .clearCookie("token")
+    .status(200)
+    .json({ message: "Successfully logged out" });
 };
