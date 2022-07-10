@@ -1,16 +1,23 @@
 const jwt = require("jsonwebtoken");
-const config = require("../config/auth.config.js");
 const db = require("../models");
-const User = db.user;
 
-verifyToken = (req, res, next) => {
-  let token = req.headers["x-access-token"];
+const generateToken = (res, id, email) => {
+  const expiration = process.env.DB_ENV === 'development' ? 100 : 604800000;
+  const token = jwt.sign({ id, email }, process.env.JWT_SECRET, {
+    expiresIn: process.env.DB_ENV === 'development' ? '1d' : '7d',
+  });
+  res.cookie('token', token);
+};
+
+const verifyTokenCookies = (req, res, next) => {
+  const token = req.cookies.token || '';
   if (!token) {
     return res.status(403).send({
-      message: "No token provided!"
+      message: "Need to Login!"
     });
   }
-  jwt.verify(token, config.secret, (err, decoded) => {
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).send({
         message: "Unauthorized!"
@@ -22,6 +29,7 @@ verifyToken = (req, res, next) => {
 };
 
 const authJwt = {
-  verifyToken: verifyToken
+  generateToken: generateToken,
+  verifyTokenCookies: verifyTokenCookies,
 };
 module.exports = authJwt;

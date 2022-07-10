@@ -1,10 +1,10 @@
 const db = require("../models");
-const config = require("../config/auth.config");
+const { authJwt } = require("../middleware");
 const User = db.user;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
-exports.signup = (req, res) => {
+exports.register = (req, res) => {
   // Save User to Database
   User.create({
     firstName: req.body.firstName,
@@ -13,14 +13,20 @@ exports.signup = (req, res) => {
     password: bcrypt.hashSync(req.body.password, 8)
   })
     .then(user => {
-      res.send({ message: "User was registered successfully!", data: user });
+      const resultDto = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      }
+      res.send({ message: "User was registered successfully!", data: resultDto });
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
     });
 };
 
-exports.signin = (req, res) => {
+exports.login = (req, res) => {
   User.findOne({
     where: {
       email: req.body.email
@@ -30,7 +36,7 @@ exports.signin = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: "User Not found." });
       }
-      var passwordIsValid = bcrypt.compareSync(
+      const passwordIsValid = bcrypt.compareSync(
         req.body.password,
         user.password
       );
@@ -40,18 +46,26 @@ exports.signin = (req, res) => {
           message: "Invalid Password!"
         });
       }
-      var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400 // 24 hours
-      });
-      res.status(200).send({
-        id: user.id,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: user.email,
-        accessToken: token
-      });
+      try {
+        authJwt.generateToken(res, user.id, user.email);
+
+        res.status(200).send({
+          id: user.id,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: user.email
+        });
+      } catch (error) {
+        res.status(500).send({ message: err.message });
+      }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({ message: err.message });
     });
+};
+
+exports.logout = async (req, res) => {
+  return res
+  .clearCookie('token')
+  .status(200)
 };

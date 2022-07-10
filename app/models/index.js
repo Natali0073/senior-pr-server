@@ -7,7 +7,6 @@ const sequelize = new Sequelize(
   {
     host: config.HOST,
     dialect: config.dialect,
-    operatorsAliases: false,
     pool: {
       max: config.pool.max,
       min: config.pool.min,
@@ -16,6 +15,13 @@ const sequelize = new Sequelize(
     }
   }
 );
+
+sequelize.authenticate().then(() => {
+  console.log("Success!");
+}).catch((err) => {
+  console.log(err);
+});
+
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;

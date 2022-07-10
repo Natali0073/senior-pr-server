@@ -9,10 +9,10 @@ module.exports = function (app) {
     );
     next();
   });
-  app.get("/api/users", [authJwt.verifyToken], controller.users);
+  app.get("/api/users", [authJwt.verifyTokenCookies], controller.users);
   app.get(
     "/api/users/:id",
-    [authJwt.verifyToken],
+    [authJwt.verifyTokenCookies],
     controller.userById
   );
 };
