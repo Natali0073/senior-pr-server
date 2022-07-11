@@ -1,15 +1,11 @@
 const express = require('express');
-const path = require('path');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const cors = require("cors");
-const cookieSession = require("cookie-session");
 const cookieParser = require("cookie-parser");
 const app = express();
 
 const PORT = process.env.API_PORT || 3000;
-
-const db = require('./app/models');
 
 const corsOptions = {
   origin: "http://localhost:4200"
@@ -22,13 +18,6 @@ app.use(
     extended: true,
   })
 )
-// app.use(
-//   cookieSession({
-//     name: "natalia-session",
-//     secret: process.env.JWT_SECRET,
-//     httpOnly: true
-//   })
-// );
 
 app.use(cookieParser());
 
@@ -45,3 +34,4 @@ app.listen(PORT, () => {
 
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
+require('./app/routes/mail-api.routes')(app);
