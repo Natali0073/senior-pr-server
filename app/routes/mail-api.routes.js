@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { verifySignUp, authJwt, verifyResetPassword } = require("../middleware");
 const sendMailMethod = require("../controllers/send-mail.controller");
 
 // Post request to send an email
@@ -11,7 +12,8 @@ module.exports = function (app) {
     );
     next();
   });
-  app.post("/api/sendmail", async (req, res) => {
+
+  app.post("/api/auth/password-reset/mail", [verifyResetPassword.checkEmailExistance], async (req, res) => {
     try {
       const result = await sendMailMethod(req.body);
 
