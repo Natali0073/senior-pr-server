@@ -22,7 +22,8 @@ const sendEmail = async (mailObj) => {
     const template = handlebars.compile(source);
     const replacements = {
       userName: user.firstName,
-      redirectionLink: `http://localhost:4200/#/reset-password/${userEmail}`
+      userEmail: userEmail,
+      redirectionLink: `http://localhost:4200/#/reset-password/${userEmail}`,
     };
     const htmlToSend = template(replacements);
 

@@ -1,8 +1,19 @@
-<div style="text-align: center;">
-  <h1 style="color: #3584c8;">Hello, {{userName}}. Forgot your password?</h1>
-  <p>
-    Click <a href="{{redirectionLink}}" target="_blank">here</a> to reset your password.
+<div style="text-align: center; width: 60%; height: 500px;">
+  <img src="https://tqs.saudisoft.com/images/forgot%20password.png" alt="Forgot password?" width="50%">
+  <h1>Forgot your password?</h2>
+    <h2>Hello, {{userName}}!
+  </h1>
+  <p>We’ve received a request to reset the password for email: <b>{{userEmail}}</b>.
     <br />
-    🌻
+    You can reset your password by clicking the link below:
   </p>
+  <a href="{{redirectionLink}}" target="_blank"
+  style="    
+  background: #f4b459;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+">RESET YOUR PASSWORD</a>
 </div>
