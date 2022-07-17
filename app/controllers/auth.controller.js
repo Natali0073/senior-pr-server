@@ -1,7 +1,6 @@
 const db = require("../models");
 const { authJwt } = require("../middleware");
 const User = db.user;
-var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.register = (req, res) => {
@@ -69,4 +68,28 @@ exports.logout = (req, res) => {
     .clearCookie("token")
     .status(200)
     .json({ message: "Successfully logged out" });
+};
+
+exports.changePassword = (req, res) => {
+  User.findOne({
+    where: {
+      email: req.body.email
+    }
+  })
+    .then(user => {
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+      const newPassword = bcrypt.hashSync(req.body.password, 8);
+      user.update({ password: newPassword })
+        .then(user => {
+          res.send({ message: "Password was reset successfully!" });
+        })
+        .catch(err => {
+          res.status(500).send({ message: err.message });
+        });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
 };

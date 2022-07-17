@@ -17,4 +17,6 @@ module.exports = (app) => {
   app.post("/api/auth/login", controller.login);
 
   app.post("/api/auth/logout", [authJwt.verifyTokenCookies], controller.logout);
+
+  app.post("/api/auth/change-password", controller.changePassword);
 };
