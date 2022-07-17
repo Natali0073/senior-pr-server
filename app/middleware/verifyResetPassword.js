@@ -10,6 +10,7 @@ checkEmailExistance = (req, res, next) => {
     if (!user) {
       return res.status(404).send({ message: "Email not found." });
     }
+    res.locals.user = user.toJSON();
     next();
   });
 };

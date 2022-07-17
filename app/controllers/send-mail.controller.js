@@ -1,8 +1,10 @@
 const nodemailer = require("nodemailer");
 const path = require('path');
+const handlebars = require('handlebars');
+const fs = require('fs');
 
 const sendEmail = async (mailObj) => {
-  const { userEmail, subject = 'Recover your credentials!' } = mailObj;
+  const { userEmail, subject = 'Recover your credentials!', user } = mailObj;
 
   try {
     const transporter = nodemailer.createTransport({
@@ -15,15 +17,22 @@ const sendEmail = async (mailObj) => {
       },
     });
 
+    const filePath = path.join(__dirname, "../template/mail.html");
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+    const replacements = {
+      userName: user.firstName,
+      redirectionLink: `http://localhost:4200/#/reset-password/${userEmail}`
+    };
+    const htmlToSend = template(replacements);
+
     // send mail with defined transport object
     let info = await transporter.sendMail({
       // TODO update before release
       // to: userEmail,
       to: process.env.DEFAULT_EMAIL,
       subject: subject,
-      html: {
-        path: path.resolve(__dirname, "../template/mail.html"),
-      },
+      html: htmlToSend,
     });
 
     console.log(`Message sent: ${info.messageId}`);
