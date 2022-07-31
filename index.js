@@ -30,8 +30,10 @@ app.listen(PORT, () => {
 })
 
 // run only if need to recreete users table
+// const db = require("./app/models");
 // db.user.sync({ force: true });
 
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/mail-api.routes')(app);
+require('./app/routes/uploads.routes')(app);
