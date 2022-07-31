@@ -9,16 +9,21 @@ exports.register = (req, res) => {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
   })
     .then(user => {
-      const resultDto = {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
+      try {
+        authJwt.generateToken(res, user.id, user.email);
+
+        res.status(200).send({
+          id: user.id,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: user.email
+        });
+      } catch (error) {
+        res.status(500).send({ message: err.message });
       }
-      res.send({ message: "User was registered successfully!", data: resultDto });
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
