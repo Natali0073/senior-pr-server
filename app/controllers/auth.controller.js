@@ -10,6 +10,7 @@ exports.register = (req, res) => {
     lastName: req.body.lastName,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
+    role: req.body.email === process.env.DEFAULT_EMAIL ? 'admin' : 'user'
   })
     .then(user => {
       try {
