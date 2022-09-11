@@ -7,25 +7,16 @@ const s3 = new AWS.S3({
 })
 
 exports.uploadAvatar = (req, res) => {
-  console.log(2222, req.file);
-  uploadFile(req.file, 'users-avatars', res);
+  uploadFile(req, 'users-avatars', res);
 };
 
-exports.uploadFiles = (req, res) => {
-  console.log(req.files);
-};
-
-const uploadFile = (file, folderName, res) => {
+exports.uploadFile = async (req, folderName, res, next) => {
   const params = {
     Bucket: process.env.BUCKET_NAME,
-    Key: `${folderName}/${file.filename}_${file.originalname}`,
-    Body: file.buffer
+    Key: `${folderName}/${req.file.filename}_${req.file.originalname}`,
+    Body: req.file.buffer
   };
 
-  s3.upload(params, function (err, data) {
-    if (err) {
-      return res.status(400).send({ message: err });
-    }
-    return res.status(200).send({ message: data.Location });
-  });
+  const uploadResult = await s3.upload(params).promise();
+  return uploadResult;
 };

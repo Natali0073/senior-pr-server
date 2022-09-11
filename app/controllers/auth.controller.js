@@ -55,10 +55,14 @@ exports.login = (req, res) => {
         authJwt.generateToken(res, user.id, user.email);
 
         res.status(200).send({
-          id: user.id,
+          avatar: req.body.avatar,
+          createdAt: req.body.createdAt,
+          email: req.body.email,
           firstName: req.body.firstName,
+          id: user.id,
           lastName: req.body.lastName,
-          email: user.email
+          role: req.body.role,
+          updatedAt: req.body.updatedAt,
         });
       } catch (error) {
         res.status(500).send({ message: err.message });

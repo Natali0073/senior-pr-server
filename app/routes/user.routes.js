@@ -1,4 +1,4 @@
-const { authJwt } = require("../middleware");
+const { authJwt, multerMiddleware } = require("../middleware");
 const controller = require("../controllers/user.controller");
 
 module.exports = function (app) {
@@ -15,4 +15,10 @@ module.exports = function (app) {
     [authJwt.verifyTokenCookies],
     controller.userById
   );
+  app.put('/api/user-update',
+    [authJwt.verifyTokenCookies,
+    multerMiddleware.upload.single("avatar")],
+    controller.updatePersonalInfo),
+
+    app.get("/api/current-user", [authJwt.verifyTokenCookies], controller.currentUser);
 };
