@@ -69,7 +69,7 @@ const updateCurrentUser = (req, res, user, uploadResponse) => {
     avatar: uploadResponse ? uploadResponse.Location : user.avatar
   })
     .then(user => {
-      res.send({ message: "Your data was updated successfully!", user: returnUserData(user) });
+      res.send(returnUserData(user));
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
