@@ -11,7 +11,7 @@ module.exports = function (app) {
     next();
   });
 
-  app.post("/api/auth/password-reset/mail", [verifyResetPassword.checkEmailExistance], async (req, res) => {
+  app.post("/api/auth/reset-password/mail", [verifyResetPassword.checkEmailExistance], async (req, res) => {
     try {
       const result = await sendMailMethod({...req.body, user: res.locals.user});
 

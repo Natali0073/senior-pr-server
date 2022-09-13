@@ -80,7 +80,7 @@ exports.logout = (req, res) => {
     .json({ message: "Successfully logged out" });
 };
 
-exports.changePassword = (req, res) => {
+exports.resetPassword = (req, res) => {
   User.findOne({
     where: {
       email: req.body.email
@@ -103,3 +103,35 @@ exports.changePassword = (req, res) => {
       res.status(500).send({ message: err.message });
     });
 };
+
+exports.changePassword = (req, res) => {
+  User.findOne({
+    where: {
+      id: req.userId
+    }
+  }).then(user => {
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
+    }
+    const oldPasswordIsValid = bcrypt.compareSync(
+      req.body.oldPassword,
+      user.password
+    );
+    
+    if (!oldPasswordIsValid) {
+      res.status(400).send({ message: "Old password is invalid" });
+      return;
+    } 
+    const newPassword = bcrypt.hashSync(req.body.password, 8);
+    user.update({ password: newPassword })
+      .then(user => {
+        res.status(200).send({ message: "Password was updated successfully!" });
+      })
+      .catch(err => {
+        res.status(500).send({ message: err.message });
+      });
+  })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
+}

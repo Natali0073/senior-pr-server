@@ -11,7 +11,6 @@ const generateToken = (res, id, email) => {
 
 const verifyTokenCookies = (req, res, next) => {
   const token = req.cookies.token || '';
-  console.log(111111, token);
   if (!token) {
     return res.status(403).send({
       message: "Need to Login!"
