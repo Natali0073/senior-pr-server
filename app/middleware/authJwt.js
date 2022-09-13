@@ -11,6 +11,7 @@ const generateToken = (res, id, email) => {
 
 const verifyTokenCookies = (req, res, next) => {
   const token = req.cookies.token || '';
+  console.log(111111, token);
   if (!token) {
     return res.status(403).send({
       message: "Need to Login!"
@@ -19,7 +20,7 @@ const verifyTokenCookies = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(401).send({
+      return res.clearCookie("token").status(401).send({
         message: "Unauthorized!"
       });
     }
