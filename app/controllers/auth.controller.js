@@ -1,5 +1,6 @@
 const db = require("../models");
 const { authJwt } = require("../middleware");
+const crypto = require('crypto');
 const User = db.user;
 var bcrypt = require("bcryptjs");
 
@@ -10,7 +11,8 @@ exports.register = (req, res) => {
     lastName: req.body.lastName,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    role: req.body.email === process.env.DEFAULT_EMAIL ? 'admin' : 'user'
+    role: req.body.email === process.env.DEFAULT_EMAIL ? 'admin' : 'user',
+    personalKey: crypto.randomUUID()
   })
     .then(user => {
       try {
@@ -83,7 +85,7 @@ exports.logout = (req, res) => {
 exports.resetPassword = (req, res) => {
   User.findOne({
     where: {
-      email: req.body.email
+      id: req.userId
     }
   })
     .then(user => {
@@ -91,7 +93,7 @@ exports.resetPassword = (req, res) => {
         return res.status(404).send({ message: "User Not found." });
       }
       const newPassword = bcrypt.hashSync(req.body.password, 8);
-      user.update({ password: newPassword })
+      user.update({ password: newPassword, personalKey: crypto.randomUUID()})
         .then(user => {
           res.send({ message: "Password was reset successfully!" });
         })

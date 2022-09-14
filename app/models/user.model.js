@@ -23,6 +23,10 @@ module.exports = (sequelize, Sequelize) => {
     role: {
       type: Sequelize.STRING
     },
+    personalKey: {
+      type: Sequelize.STRING,
+      allowNull: false
+    }
   });
   return User;
 };
