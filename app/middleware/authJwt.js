@@ -73,6 +73,8 @@ const verifyResetPasswordToken = (req, res, next) => {
     return user.personalKey;
   }).then(key => {
     jwt.verify(token, process.env.JWT_RESET_SECRET + key, (err, decoded) => {
+      console.log(err);
+      console.log(decoded);
       if (err) {
         return res.status(401).send({
           message: "Session expired!"

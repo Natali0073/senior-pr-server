@@ -93,7 +93,7 @@ exports.resetPassword = (req, res) => {
         return res.status(404).send({ message: "User Not found." });
       }
       const newPassword = bcrypt.hashSync(req.body.password, 8);
-      user.update({ password: newPassword, personalKey: crypto.randomUUID()})
+      user.update({ password: newPassword, personalKey: uuidv4()})
         .then(user => {
           res.send({ message: "Password was reset successfully!" });
         })
