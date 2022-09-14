@@ -1,8 +1,8 @@
 const db = require("../models");
 const { authJwt } = require("../middleware");
-const crypto = require('crypto');
 const User = db.user;
 var bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require('uuid');
 
 exports.register = (req, res) => {
   // Save User to Database
@@ -12,7 +12,7 @@ exports.register = (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
     role: req.body.email === process.env.DEFAULT_EMAIL ? 'admin' : 'user',
-    personalKey: crypto.randomUUID()
+    personalKey: uuidv4()
   })
     .then(user => {
       try {
