@@ -16,7 +16,7 @@ exports.register = (req, res) => {
   })
     .then(user => {
       try {
-        authJwt.generateToken(res, user.id, user.email);
+        authJwt.generateToken(res, user.id, user.personalKey, user.email);
 
         res.status(200).send({
           id: user.id,
@@ -54,7 +54,7 @@ exports.login = (req, res) => {
         });
       }
       try {
-        authJwt.generateToken(res, user.id, user.email);
+        authJwt.generateToken(res, user.id, user.personalKey, user.email);
 
         res.status(200).send({
           avatar: req.body.avatar,
