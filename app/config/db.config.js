@@ -3,8 +3,9 @@ module.exports = {
   USER: "nataliamakarchuk",
   PASSWORD: "password",
   DB: process.env.DB_ENV === 'development' ? 'api' : process.env.DB_IDENTIFIER,
-  dialect: "postgres",
-  port: 5432,
+  dialect: "mysql",
+  // dialect: "postgres",
+  // port: 5432,
   pool: {
     max: 5,
     min: 0,
