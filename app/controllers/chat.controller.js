@@ -21,8 +21,8 @@ exports.chats = (req, res) => {
   })
 };
 
-exports.chatByUserId = (req, res) => {
-  const id = req.query.id;
+exports.chatByReceiverId = (req, res) => {
+  const id = req.query.receiverId;
   if (!id || id.length === 0) {
     return res.status(400).send({ message: "Wrong user id" });
   }
@@ -44,10 +44,10 @@ exports.chatByUserId = (req, res) => {
 };
 
 exports.messagesByChatId = (req, res) => {
-  const { lastMessageDate, size, id } = req.query;
+  const { lastMessageDate, size } = req.query;
   Message.findAll({
     where: {
-      chatID: id,
+      chatID: req.params.id,
       date: {
         [Op.lt]: lastMessageDate ?? new Date()
       }
@@ -60,11 +60,10 @@ exports.messagesByChatId = (req, res) => {
 };
 
 exports.saveMessage = (req, res) => {
-  const { chatID, text } = req.body;
   Message.create({
-    chatID: chatID,
+    chatID: req.params.id,
     senderID: req.userId,
-    text: text,
+    text: req.body.text,
     date: new Date()
   })
     .then(message => {
