@@ -27,4 +27,6 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
+db.chat = require("./chat.model.js")(sequelize, Sequelize);
+db.message = require("./message.model.js")(sequelize, Sequelize);
 module.exports = db;
