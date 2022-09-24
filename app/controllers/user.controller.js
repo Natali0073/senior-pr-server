@@ -3,7 +3,13 @@ const uploadController = require("./uploads.controller");
 const User = db.user;
 
 exports.users = (req, res) => {
-  User.findAll().then(users => {
+  User.findAll({
+    where: {
+      id: {
+        [Op.ne]: req.userId
+      }
+    }
+  }).then(users => {
     const response = users.map(user => returnUserData(user));
     res.status(200).send(response);
   })
