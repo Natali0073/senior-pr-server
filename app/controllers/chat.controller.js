@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const db = require("../models");
+const io = require("../index.js");
 const Chat = db.chat;
 const Message = db.message;
 
@@ -8,7 +9,7 @@ exports.chats = (req, res) => {
   const { limit, offset } = getPagination(page, size);
   Chat.findAndCountAll({
     where: {
-      userIDs: {
+      userIds: {
         [Op.like]: `%${req.userId}%`
       }
     },
@@ -30,12 +31,12 @@ exports.chatByReceiverId = (req, res) => {
   Chat.findOrCreate({
     where: {
       [Op.or]: [
-        { userIDs: `${req.userId}, ${id}` },
-        { userIDs: `${id}, ${req.userId}` }
+        { userIds: `${req.userId},${id}` },
+        { userIds: `${id},${req.userId}` }
       ]
     },
     defaults: {
-      userIDs: `${req.userId}, ${id}`,
+      userIds: `${req.userId},${id}`,
       updatedAt: new Date()
     }
   }).then(chat => {
@@ -47,7 +48,7 @@ exports.messagesByChatId = (req, res) => {
   const { lastMessageDate, size } = req.query;
   Message.findAll({
     where: {
-      chatID: req.params.id,
+      chatId: req.params.id,
       date: {
         [Op.lt]: lastMessageDate ?? new Date()
       }
@@ -60,15 +61,20 @@ exports.messagesByChatId = (req, res) => {
 };
 
 exports.saveMessage = (req, res) => {
+  const chatId = req.params.id;
   Message.create({
-    chatID: req.params.id,
-    senderID: req.userId,
+    chatId: chatId,
+    senderId: req.userId,
     text: req.body.text,
     date: new Date()
   })
-    .then(message => {
+    .then(async message => {
       console.log(message);
-      // TODO: trig socket
+      const chat = await Chat.findOne({ where: { id: chatId } });
+      await chat.update({ updatedAt: new Date() });
+      var userIds = chat.userIds.split(",", 2);
+      userIds.forEach(id => io.emit(`chatUpdatedForUserId/${id}`, { chat }));
+      io.emit(`newMessageInChatId/${chatId}`, { message });
       res.status(200).send();
     })
     .catch(err => {

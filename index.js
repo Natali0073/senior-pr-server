@@ -9,7 +9,7 @@ const app = express();
 // const httpServer = new http.Server(app);
 // const io = new Server(httpServer, { cors: { origin: '*' } });
 const httpServer = require("http").createServer(app);
-const io = require("socket.io")(httpServer, {
+export const io = require("socket.io")(httpServer, {
   cors: {
     origin: "http://localhost:4200",
     methods: ["GET", "POST", "PUT"]

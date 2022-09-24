@@ -5,11 +5,11 @@ module.exports = (sequelize, Sequelize) => {
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
-    chatID: {
+    chatId: {
       type: Sequelize.UUID,
       allowNull: false
     },
-    senderID: {
+    senderId: {
       type: Sequelize.UUID,
       allowNull: false
     },
