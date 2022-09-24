@@ -9,12 +9,13 @@ const app = express();
 // const httpServer = new http.Server(app);
 // const io = new Server(httpServer, { cors: { origin: '*' } });
 const httpServer = require("http").createServer(app);
-export const io = require("socket.io")(httpServer, {
+const ioSocket = require("socket.io")(httpServer, {
   cors: {
     origin: "http://localhost:4200",
     methods: ["GET", "POST", "PUT"]
   }
 });
+exports.io = ioSocket;
 
 const PORT = process.env.API_PORT || 3000;
 
@@ -35,10 +36,11 @@ app.use(cookieParser());
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
 })
-io.on('connection', (socket) => {
-  console.log('a user connected');
+ioSocket.on('connection', (socket) => {
+  socket.on('fromClient', (data) => {
+  })
 });
-io.on("connect_error", (err) => {
+ioSocket.on("connect_error", (err) => {
   console.log(`connect_error due to ${err.message}`);
 });
 
@@ -53,7 +55,10 @@ httpServer.listen(PORT, () => {
 // run only if need to recreete users table
 // const db = require("./app/models");
 // db.user.sync({ force: true });
+// db.chat.sync({ force: true });
+// db.message.sync({ force: true });
 
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/mail-api.routes')(app);
+require('./app/routes/chat.routes')(app);

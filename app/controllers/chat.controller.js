@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const db = require("../models");
-const io = require("../index.js");
+const index = require("../../index");
 const Chat = db.chat;
 const Message = db.message;
 
@@ -14,12 +14,15 @@ exports.chats = (req, res) => {
       }
     },
     order: [['updatedAt', 'DESC']],
-    offset: offset, 
-    limit: limit 
+    offset: offset,
+    limit: limit
   }).then(data => {
     const response = getChatsPagingData(data, page, limit);
     res.status(200).send(response);
   })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
 };
 
 exports.chatByReceiverId = (req, res) => {
@@ -50,11 +53,11 @@ exports.messagesByChatId = (req, res) => {
     where: {
       chatId: req.params.id,
       date: {
-        [Op.lt]: lastMessageDate ?? new Date()
+        [Op.lt]: lastMessageDate || new Date()
       }
     },
     order: [['date', 'DESC']],
-    limit: size 
+    limit: size
   }).then(messages => {
     res.status(200).send(messages);
   })
@@ -73,8 +76,8 @@ exports.saveMessage = (req, res) => {
       const chat = await Chat.findOne({ where: { id: chatId } });
       await chat.update({ updatedAt: new Date() });
       var userIds = chat.userIds.split(",", 2);
-      userIds.forEach(id => io.emit(`chatUpdatedForUserId/${id}`, { chat }));
-      io.emit(`newMessageInChatId/${chatId}`, { message });
+      userIds.forEach(id => index.io.emit(`chatUpdatedForUserId/${id}`, { chat }));
+      index.io.emit(`newMessageInChatId/${chatId}`, { message });
       res.status(200).send();
     })
     .catch(err => {
