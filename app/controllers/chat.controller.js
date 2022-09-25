@@ -43,8 +43,11 @@ exports.chatByReceiverId = (req, res) => {
       updatedAt: new Date()
     }
   }).then(chat => {
-    res.status(200).send(chat);
+    res.status(200).send(chat[0]);
   })
+    .catch(err => {
+      res.status(500).send({ message: err.message });
+    });
 };
 
 exports.messagesByChatId = (req, res) => {
@@ -57,10 +60,13 @@ exports.messagesByChatId = (req, res) => {
       }
     },
     order: [['date', 'DESC']],
-    limit: size
+    limit: +size
   }).then(messages => {
     res.status(200).send(messages);
   })
+    .catch(err => {
+      res.status(500).send({ message: err.message });
+    });
 };
 
 exports.saveMessage = (req, res) => {
@@ -74,7 +80,7 @@ exports.saveMessage = (req, res) => {
     .then(async message => {
       console.log(message);
       const chat = await Chat.findOne({ where: { id: chatId } });
-      await chat.update({ updatedAt: new Date() });
+      await chat.update({ lastUpdate: new Date() });
       var userIds = chat.userIds.split(",", 2);
       userIds.forEach(id => index.io.emit(`chatUpdatedForUserId/${id}`, { chat }));
       index.io.emit(`newMessageInChatId/${chatId}`, { message });

@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
     lastUpdate: {
       type: Sequelize.DATE
     },
-    userIDs: {
+    userIds: {
       type: Sequelize.STRING
     }
   });

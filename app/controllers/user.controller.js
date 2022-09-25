@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const db = require("../models");
 const uploadController = require("./uploads.controller");
 const User = db.user;
