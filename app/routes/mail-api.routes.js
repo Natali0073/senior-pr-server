@@ -21,7 +21,6 @@ module.exports = function (app) {
         payload: result,
       });
     } catch (error) {
-      console.error(error.message);
       res.json({
         status: false,
         payload: "Something went wrong in Sendmail Route.",

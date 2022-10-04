@@ -38,10 +38,8 @@ const sendEmail = async (mailObj) => {
       html: htmlToSend,
     });
 
-    console.log(`Message sent: ${info.messageId}`);
     return `Message sent: ${info.messageId}`;
   } catch (error) {
-    console.error(error);
     throw new Error(
       `Something went wrong in the sendmail method. Error: ${error.message}`
     );

@@ -78,12 +78,11 @@ exports.saveMessage = (req, res) => {
     date: new Date()
   })
     .then(async message => {
-      console.log(message);
       const chat = await Chat.findOne({ where: { id: chatId } });
       await chat.update({ lastUpdate: new Date() });
       var userIds = chat.userIds.split(",", 2);
-      userIds.forEach(id => index.io.emit(`chatUpdatedForUserId/${id}`, { chat }));
-      index.io.emit(`newMessageInChatId/${chatId}`, { message });
+      userIds.forEach(id => index.io.emit(`chatUpdatedForUserId/${id}`, chat));
+      index.io.emit(`newMessageInChatId/${chatId}`, message);
       res.status(200).send();
     })
     .catch(err => {
