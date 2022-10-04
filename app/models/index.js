@@ -29,4 +29,9 @@ db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.chat = require("./chat.model.js")(sequelize, Sequelize);
 db.message = require("./message.model.js")(sequelize, Sequelize);
+
+db.user.sync();
+db.chat.sync();
+db.message.sync();
+
 module.exports = db;
