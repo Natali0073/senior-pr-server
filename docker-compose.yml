@@ -6,6 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8080:8080
+      - $API_PORT:$API_PORT
     env_file:
       - .env
