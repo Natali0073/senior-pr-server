@@ -3,7 +3,6 @@ const db = require("../models");
 const User = db.user;
 
 const generateToken = (res, id, key, email) => {
-  const expiration = process.env.DB_ENV === 'development' ? 100 : 604800000;
   const token = jwt.sign({ id, email }, key, {
     expiresIn: process.env.DB_ENV === 'development' ? '1d' : '7d',
   });
@@ -24,9 +23,7 @@ const verifyTokenCookies = (req, res, next) => {
     }
   }).then(user => {
     if (!user) {
-      return res.status(404).send({
-        message: "No user found"
-      });
+      return
     }
     return user.personalKey;
   }).then(key => {

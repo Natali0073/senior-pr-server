@@ -34,4 +34,6 @@ db.user.sync();
 db.chat.sync();
 db.message.sync();
 
+// { force: true }
+
 module.exports = db;
