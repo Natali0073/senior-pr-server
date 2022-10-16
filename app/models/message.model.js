@@ -7,17 +7,20 @@ module.exports = (sequelize, Sequelize) => {
     },
     chatId: {
       type: Sequelize.UUID,
-      allowNull: false
+      references: {
+        model: 'chats',
+        key: 'id'
+      }
     },
     senderId: {
       type: Sequelize.UUID,
-      allowNull: false
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     text: {
-      type: Sequelize.STRING
-    },
-    date: {
-      type: Sequelize.DATE
+      type: Sequelize.TEXT
     }
   });
   return Message;

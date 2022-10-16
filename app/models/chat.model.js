@@ -5,8 +5,8 @@ module.exports = (sequelize, Sequelize) => {
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
-    lastUpdate: {
-      type: Sequelize.DATE
+    lastMessageText: {
+      type: Sequelize.STRING
     },
     userIds: {
       type: Sequelize.STRING

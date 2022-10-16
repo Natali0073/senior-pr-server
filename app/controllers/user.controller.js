@@ -3,20 +3,23 @@ const db = require("../models");
 const uploadController = require("./uploads.controller");
 const User = db.user;
 
+const excludedFromUser = ['password', 'personalKey'];
+
 exports.users = (req, res) => {
   User.findAll({
+    attributes: { exclude: excludedFromUser },
     where: {
       id: {
         [Op.ne]: req.userId
       }
     }
   }).then(users => {
-    const response = users.map(user => returnUserData(user));
-    res.status(200).send(response);
+    res.status(200).send(users);
   })
 };
 exports.userById = (req, res) => {
   User.findOne({
+    attributes: { exclude: excludedFromUser },
     where: {
       id: req.params.id
     }
@@ -25,12 +28,13 @@ exports.userById = (req, res) => {
       return res.status(404).send({ message: "User Not found." });
     }
 
-    res.status(200).send(returnUserData(user));
+    res.status(200).send(user);
   })
 };
 
 exports.currentUser = (req, res) => {
   User.findOne({
+    attributes: { exclude: excludedFromUser },
     where: {
       id: req.userId
     }
@@ -39,12 +43,13 @@ exports.currentUser = (req, res) => {
       return res.status(404).send({ message: "User Not found." });
     }
 
-    res.status(200).send(returnUserData(user));
+    res.status(200).send(user);
   })
 };
 
 exports.updatePersonalInfo = (req, res, next) => {
   User.findOne({
+    attributes: { exclude: excludedFromUser },
     where: {
       id: req.userId
     }
@@ -76,20 +81,9 @@ const updateCurrentUser = (req, res, user, uploadResponse) => {
     avatar: uploadResponse ? uploadResponse.Location : user.avatar
   })
     .then(user => {
-      res.send(returnUserData(user));
+      res.send(user);
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
     });
 }
-
-const returnUserData = (user) => ({
-  avatar: user.avatar,
-  createdAt: user.createdAt,
-  email: user.email,
-  firstName: user.firstName,
-  id: user.id,
-  lastName: user.lastName,
-  role: user.role,
-  updatedAt: user.updatedAt,
-});
