@@ -56,6 +56,7 @@ httpServer.listen(PORT, () => {
 // const db = require("./app/models");
 // db.user.sync({ force: true });
 // db.chat.sync({ force: true });
+// db.usersChats.sync({ force: true });
 // db.message.sync({ force: true });
 
 require('./app/routes/auth.routes')(app);
