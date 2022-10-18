@@ -54,10 +54,7 @@ httpServer.listen(PORT, () => {
 
 // run only if need to recreete users table
 // const db = require("./app/models");
-// db.user.sync({ force: true });
-// db.chat.sync({ force: true });
-// db.usersChats.sync({ force: true });
-// db.message.sync({ force: true });
+// db.sequelize.sync({ force: true });
 
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);

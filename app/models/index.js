@@ -28,21 +28,17 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.chat = require("./chat.model.js")(sequelize, Sequelize);
-db.usersChats = require("./usersChats.model.js")(sequelize, Sequelize);
 db.message = require("./message.model.js")(sequelize, Sequelize);
 
-db.chat.hasMany(db.message);
 db.user.hasMany(db.message);
-db.message.belongsTo(db.chat);
 db.message.belongsTo(db.user);
-db.user.belongsToMany(db.chat, { through: db.usersChats });
-db.chat.belongsToMany(db.user, { through: db.usersChats });
 
-db.user.sync();
-db.chat.sync();
-db.message.sync();
-db.usersChats.sync();
+db.chat.hasMany(db.message);
+db.message.belongsTo(db.chat);
 
-// { force: true }
+db.user.belongsToMany(db.chat, { through: 'usersChats' });
+db.chat.belongsToMany(db.user, { through: 'usersChats' });
+
+sequelize.sync();
 
 module.exports = db;
