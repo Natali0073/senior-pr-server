@@ -6,12 +6,27 @@ const User = db.user;
 const excludedFromUser = ['password', 'personalKey'];
 
 exports.users = (req, res) => {
+  const { name } = req.query;
+  const nameMatch = name || '';
+
   User.findAll({
     attributes: { exclude: excludedFromUser },
     where: {
       id: {
         [Op.ne]: req.userId
-      }
+      },
+      [Op.or]: [
+        {
+          firstName: {
+            [Op.like]: `%${nameMatch}%`
+          }
+        },
+        {
+          lastName: {
+            [Op.like]: `%${nameMatch}%`
+          }
+        }
+      ]
     }
   }).then(users => {
     res.status(200).send(users);
