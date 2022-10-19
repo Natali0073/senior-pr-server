@@ -36,6 +36,13 @@ app.use(cookieParser());
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
 })
+ioSocket.on('connection', (socket) => {
+  socket.on('fromClient', (data) => {
+  })
+});
+ioSocket.on("connect_error", (err) => {
+  console.log(`connect_error due to ${err.message}`);
+});
 
 httpServer.listen(PORT, () => {
   console.log(`App running on port ${PORT}.`)

@@ -39,6 +39,6 @@ db.message.belongsTo(db.chat);
 db.user.belongsToMany(db.chat, { through: 'usersChats' });
 db.chat.belongsToMany(db.user, { through: 'usersChats' });
 
-sequelize.sync();
+sequelize.sync({ force: false });
 
 module.exports = db;
