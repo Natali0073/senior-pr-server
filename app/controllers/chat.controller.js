@@ -30,7 +30,6 @@ exports.chats = (req, res) => {
       }
     }
   }).then(data => {
-console.log(111111, data);
     const response = getChatsPagingData(data, page, limit);
     res.status(200).send(response);
   })
@@ -81,7 +80,6 @@ exports.chatByReceiverId = (req, res) => {
       // trigger socket??
       return
     }
-    console.log(1111111, chat[0]);
     res.status(200).send(mapChat(chat[0]));
   })
     .catch(err => {

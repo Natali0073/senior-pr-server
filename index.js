@@ -36,25 +36,10 @@ app.use(cookieParser());
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
 })
-ioSocket.on('connection', (socket) => {
-  socket.on('fromClient', (data) => {
-  })
-});
-ioSocket.on("connect_error", (err) => {
-  console.log(`connect_error due to ${err.message}`);
-});
 
 httpServer.listen(PORT, () => {
   console.log(`App running on port ${PORT}.`)
 })
-
-// app.listen(PORT, () => {
-//   console.log(`App running on port ${PORT}.`)
-// })
-
-// run only if need to recreete users table
-// const db = require("./app/models");
-// db.sequelize.sync({ force: true });
 
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
