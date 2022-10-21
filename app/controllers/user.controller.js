@@ -2,30 +2,30 @@ const { Op } = require("sequelize");
 const db = require("../models");
 const uploadController = require("./uploads.controller");
 const User = db.user;
+const sequelize = db.sequelize;
 
 const excludedFromUser = ['password', 'personalKey'];
 
 exports.users = (req, res) => {
   const { name } = req.query;
-  const nameMatch = name || '';
 
   User.findAll({
     attributes: { exclude: excludedFromUser },
     where: {
-      id: {
-        [Op.ne]: req.userId
-      },
-      [Op.or]: [
+      [Op.and]: [
         {
-          firstName: {
-            [Op.like]: `%${nameMatch}%`
-          }
+          id: { [Op.ne]: req.userId }
         },
-        {
-          lastName: {
-            [Op.like]: `%${nameMatch}%`
-          }
-        }
+        sequelize.where(sequelize.fn(
+          'concat', 
+          sequelize.col('firstName'), 
+          ' ', 
+          sequelize.col('lastName'),
+          ' ', 
+          sequelize.col('firstName')
+          ), {
+            [Op.like]: `%${name || ''}%`
+          })
       ]
     }
   }).then(users => {
