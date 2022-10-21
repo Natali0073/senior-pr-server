@@ -121,14 +121,19 @@ exports.saveMessage = (req, res) => {
           as: 'users',
           attributes: { exclude: excludedFromUser },
           where: {
-            id: { [Op.ne]: req.userId }
-          }
+            id: {
+              [Op.like]: `%${req.userId}%`
+            }
+          },
         }
       });
       chat.addMessage(message);
       await chat.update({ lastMessageText: req.body.text });
       var userIds = chat.userIds.split(",", 2);
-      userIds.forEach(id => index.io.emit(`chatUpdatedForUserId/${id}`, mapChat(chat)));
+      userIds.forEach(id => {
+        const user = chat.users.filter(user => user.id === id)
+        index.io.emit(`chatUpdatedForUserId/${id}`, mapChat(chat, user))
+      });
       index.io.emit(`newMessageInChatId/${chatId}`, message);
       res.status(200).send();
     })
