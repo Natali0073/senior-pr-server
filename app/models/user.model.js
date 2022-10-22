@@ -32,6 +32,10 @@ module.exports = (sequelize, Sequelize) => {
     role: {
       type: Sequelize.STRING
     },
+    isBanned: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
+    },
     personalKey: {
       type: Sequelize.STRING,
       allowNull: false
