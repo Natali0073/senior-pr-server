@@ -119,19 +119,14 @@ exports.saveMessage = (req, res) => {
         include: {
           model: User,
           as: 'users',
-          attributes: { exclude: excludedFromUser },
-          where: {
-            id: {
-              [Op.like]: `%${req.userId}%`
-            }
-          },
+          attributes: { exclude: excludedFromUser }
         }
       });
       chat.addMessage(message);
       await chat.update({ lastMessageText: req.body.text });
       var userIds = chat.userIds.split(",", 2);
       userIds.forEach(id => {
-        const user = chat.users.filter(user => user.id === id)
+        const user = chat.users.filter(user => user.id !== id)
         index.io.emit(`chatUpdatedForUserId/${id}`, mapChat(chat, user))
       });
       index.io.emit(`newMessageInChatId/${chatId}`, message);
@@ -164,6 +159,6 @@ const mapChat = (chat, users) => ({
   id: chat.id,
   lastMessageText: chat.lastMessageText || '',
   updatedAt: chat.updatedAt,
-  name: (chat.users || users || [])[0].fullName,
-  icon: (chat.users || users || [])[0].avatar
+  name: (users || chat.users || [])[0].fullName,
+  icon: (users || chat.users || [])[0].avatar
 });
