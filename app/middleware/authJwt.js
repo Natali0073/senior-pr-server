@@ -23,8 +23,17 @@ const verifyTokenCookies = (req, res, next) => {
     }
   }).then(user => {
     if (!user) {
-      return
+      return res.status(404).send({
+        message: "User not found"
+      });
     }
+
+    if (user.isBanned) {
+      return res.status(403).send({
+        message: "User is banned"
+      });
+    }
+
     return user.personalKey;
   }).then(key => {
     jwt.verify(token, key, (err, decoded) => {
@@ -34,6 +43,7 @@ const verifyTokenCookies = (req, res, next) => {
         });
       }
       req.userId = decoded.id;
+      req.isAdmin = decoded.role === 'admin';
       next();
     });
   });
