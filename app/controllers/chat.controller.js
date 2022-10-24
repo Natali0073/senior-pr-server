@@ -110,7 +110,7 @@ exports.saveMessage = (req, res) => {
   const chatId = req.params.id;
   Message.create({
     chatId: chatId,
-    senderId: req.userId,
+    userId: req.userId,
     text: req.body.text
   })
     .then(async message => {

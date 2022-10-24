@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id'
       }
     },
-    senderId: {
+    userId: {
       type: Sequelize.UUID,
       references: {
         model: 'users',

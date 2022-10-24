@@ -23,8 +23,8 @@ const verifyTokenCookies = (req, res, next) => {
     }
   }).then(user => {
     if (!user) {
-      return res.status(404).send({
-        message: "User not found"
+      return res.status(401).send({
+        message: "User invalid"
       });
     }
 
@@ -74,7 +74,7 @@ const verifyResetPasswordToken = (req, res, next) => {
   }).then(user => {
     if (!user) {
       return res.status(404).send({
-        message: "No user found"
+        message: "Email is incorrect! Please enter again."
       });
     }
     return user.personalKey;
