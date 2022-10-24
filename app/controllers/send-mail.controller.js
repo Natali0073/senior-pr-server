@@ -31,9 +31,7 @@ const sendEmail = async (mailObj) => {
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
-      // TODO update before release
-      // to: userEmail,
-      to: process.env.DEFAULT_EMAIL,
+      to: process.env.DB_ENV === 'development' ? process.env.ADMIN_EMAIL : userEmail,
       subject: subject,
       html: htmlToSend,
     });
