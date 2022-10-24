@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const db = require("../models");
 const index = require("../../index");
+const { utils: { getPagination, getPagingData } } = require("../shared");
 const Chat = db.chat;
 const User = db.user;
 const Message = db.message;
@@ -30,7 +31,8 @@ exports.chats = (req, res) => {
       }
     }
   }).then(data => {
-    const response = getChatsPagingData(data, page, limit);
+    const response = getPagingData(data, page, limit, 'chats');
+    response.chats = response.chats.map(chat => mapChat(chat));
     res.status(200).send(response);
   })
     .catch((err) => {
@@ -135,24 +137,6 @@ exports.saveMessage = (req, res) => {
     .catch(err => {
       res.status(500).send({ message: err.message });
     });
-};
-
-const getPagination = (page, size) => {
-  const limit = size ? +size : 10;
-  const offset = page ? page * limit : 0;
-
-  return { limit, offset };
-};
-
-const getChatsPagingData = (data, page, limit) => {
-  const { count: totalItems, rows: rawChats } = data;
-  const currentPage = page ? +page : 0;
-  const totalPages = Math.ceil(totalItems / limit);
-  const chats = rawChats.map(chat => {
-    return mapChat(chat);
-  });
-
-  return { totalItems, chats, totalPages, currentPage };
 };
 
 const mapChat = (chat, users) => ({

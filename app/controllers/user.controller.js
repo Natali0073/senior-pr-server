@@ -1,15 +1,17 @@
 const { Op } = require("sequelize");
 const db = require("../models");
 const uploadController = require("./uploads.controller");
+const { utils: { getPagination, getPagingData } } = require("../shared");
 const User = db.user;
 const sequelize = db.sequelize;
 
 const excludedFromUser = ['password', 'personalKey'];
 
 exports.users = (req, res) => {
-  const { name } = req.query;
+  const { name, page, size } = req.query;
+  const { limit, offset } = getPagination(page, size); 
 
-  User.findAll({
+  User.findAndCountAll({
     attributes: { exclude: excludedFromUser },
     where: {
       [Op.and]: [
@@ -27,9 +29,13 @@ exports.users = (req, res) => {
             [Op.like]: `%${name || ''}%`
           })
       ]
-    }
-  }).then(users => {
-    res.status(200).send(users);
+    },
+    order: [['firstName', 'DESC']],
+    offset: offset,
+    limit: limit,
+  }).then(data => {
+    const response = getPagingData(data, page, limit, 'users');
+    res.status(200).send(response);
   })
 };
 exports.userById = (req, res) => {

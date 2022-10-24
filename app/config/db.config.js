@@ -3,7 +3,7 @@ module.exports = {
   USER: process.env.DB_ENV === 'development' ? 'root' : process.env.MYSQLDB_USER,
   PASSWORD: process.env.MYSQLDB_ROOT_PASSWORD,
   DB: process.env.DB_IDENTIFIER,
-  SHOULD_CLEAR: process.env.DB_CLEAR,
+  SHOULD_CLEAR: process.env.DB_CLEAR === 'true', 
   pool: {
     max: 5,
     min: 0,
