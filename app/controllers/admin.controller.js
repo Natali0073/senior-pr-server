@@ -43,7 +43,7 @@ exports.ban = (req, res, next) => {
   if (req.isAdmin === false) { 
     return res.status(403).send();
   }
-
+  
   User.findOne({
     attributes: { exclude: excludedFromUser },
     where: {
@@ -63,7 +63,7 @@ const updateUser = (req, res, user) => {
     isBanned: req.body.isBanned
   })
     .then(user => {
-      res.status(200).send();
+      res.status(200).send(user);
     })
     .catch(err => {
       res.status(500).send({ message: err.message });

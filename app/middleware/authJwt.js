@@ -27,23 +27,16 @@ const verifyTokenCookies = (req, res, next) => {
         message: "User invalid"
       });
     }
-
-    if (user.isBanned) {
-      return res.status(403).send({
-        message: "User is banned"
-      });
-    }
-
-    return user.personalKey;
-  }).then(key => {
-    jwt.verify(token, key, (err, decoded) => {
+    return user;
+  }).then(user => {
+    jwt.verify(token, user.personalKey, (err, decoded) => {
       if (err) {
         return res.status(401).send({
           message: "Session expired!"
         });
       }
       req.userId = decoded.id;
-      req.isAdmin = decoded.role === 'admin';
+      req.isAdmin = user.role === 'admin';
       next();
     });
   });

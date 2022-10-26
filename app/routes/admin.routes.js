@@ -10,7 +10,6 @@ module.exports = function (app) {
     next();
   });
   app.get("/api/admin/banned", [authJwt.verifyTokenCookies], controller.bannedUsers);
-  app.post('/api/admin/ban',
-    [authJwt.verifyTokenCookies],
-    controller.ban)
+
+  app.post('/api/admin/ban', [authJwt.verifyTokenCookies], controller.ban)
 };

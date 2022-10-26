@@ -16,7 +16,8 @@ exports.users = (req, res) => {
     where: {
       [Op.and]: [
         {
-          id: { [Op.ne]: req.userId }
+          id: { [Op.ne]: req.userId },
+          isBanned: false
         },
         sequelize.where(sequelize.fn(
           'concat', 
