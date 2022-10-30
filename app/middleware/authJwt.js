@@ -27,6 +27,14 @@ const verifyTokenCookies = (req, res, next) => {
         message: "User invalid"
       });
     }
+
+    if (user.isBanned) {
+      return res.status(403).send({
+        message: "User is banned",
+        reason: 'userBanned'
+      });
+    }
+    
     return user;
   }).then(user => {
     jwt.verify(token, user.personalKey, (err, decoded) => {

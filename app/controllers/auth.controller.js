@@ -43,6 +43,14 @@ exports.login = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: "User Not found." });
       }
+
+      if (user.isBanned) {
+        return res.status(403).send({
+          message: "User is banned",
+          reason: 'userBanned'
+        });
+      }
+      
       const passwordIsValid = bcrypt.compareSync(
         req.body.password,
         user.password
@@ -93,7 +101,7 @@ exports.resetPassword = (req, res) => {
         return res.status(404).send({ message: "User Not found." });
       }
       const newPassword = bcrypt.hashSync(req.body.password, 8);
-      user.update({ password: newPassword, personalKey: uuidv4()})
+      user.update({ password: newPassword, personalKey: uuidv4() })
         .then(user => {
           res.send({ message: "Password was reset successfully!" });
         })
@@ -119,11 +127,11 @@ exports.changePassword = (req, res) => {
       req.body.oldPassword,
       user.password
     );
-    
+
     if (!oldPasswordIsValid) {
       res.status(400).send({ message: "Old password is invalid" });
       return;
-    } 
+    }
     const newPassword = bcrypt.hashSync(req.body.password, 8);
     user.update({ password: newPassword })
       .then(user => {
