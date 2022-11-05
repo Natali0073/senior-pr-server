@@ -16,6 +16,8 @@ module.exports = (app) => {
 
   app.post("/api/auth/login", controller.login);
 
+  app.post("/api/auth/login-google", controller.loginWithGoogle);
+
   app.post("/api/auth/logout", [authJwt.verifyTokenCookies], controller.logout);
 
   app.post("/api/auth/reset-password", [authJwt.verifyResetPasswordToken], controller.resetPassword);

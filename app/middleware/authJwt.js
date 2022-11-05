@@ -21,15 +21,14 @@ const verifyTokenCookies = (req, res, next) => {
     where: {
       id: id
     }
-  }).then(user => {
+  })
+  .then(user => {
     if (!user) {
       return res.status(401).send({
         message: "User invalid"
       });
     }
 
-    return user;
-  }).then(user => {
     if (user.isBanned) {
       return res.status(403).send({
         message: "User is banned",

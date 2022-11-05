@@ -1,8 +1,11 @@
-const db = require("../models");
-const { authJwt } = require("../middleware");
-const User = db.user;
 var bcrypt = require("bcryptjs");
+const {OAuth2Client} = require('google-auth-library');
 const { v4: uuidv4 } = require('uuid');
+const { authJwt } = require("../middleware");
+const db = require("../models");
+const User = db.user;
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 
 exports.register = (req, res) => {
   // Save User to Database
@@ -34,6 +37,10 @@ exports.register = (req, res) => {
 };
 
 exports.login = (req, res) => {
+  if (req.body.password === null) {
+    return res.status(404).send({ message: "No password" });
+  }
+
   User.findOne({
     where: {
       email: req.body.email
@@ -144,4 +151,46 @@ exports.changePassword = (req, res) => {
     .catch((err) => {
       res.status(500).send({ message: err.message });
     });
+}
+
+exports.loginWithGoogle = (req, res) => {
+  client.verifyIdToken({
+    idToken: req.body.credential,
+    audience: process.env.GOOGLE_CLIENT_ID
+  })
+  .then(async ticket => {
+    const payload = ticket.getPayload();
+    const { email, given_name, family_name } = payload;
+
+    const user = await User.findOrCreate({
+      where: {
+        email: email
+      },
+      defaults: {
+        firstName: given_name,
+        lastName: family_name,
+        email: email,
+        password: null,
+        role: email === process.env.ADMIN_EMAIL ? 'admin' : 'user',
+        personalKey: uuidv4()
+      }
+    });
+
+    if (user[1]) {
+      return user[0].dataValues;
+    }
+
+    return user[0];
+  })
+  .then(user => {
+    try {
+      authJwt.generateToken(res, user.id, user.personalKey, user.email);
+      return res.redirect('/');
+    } catch (error) {
+      res.status(500).send({ message: err.message });
+    }
+  })
+  .catch(err => {
+    res.status(500).send({ message: err.message });
+  });
 }
