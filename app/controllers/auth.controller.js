@@ -194,3 +194,58 @@ exports.loginWithGoogle = (req, res) => {
     res.status(500).send({ message: err.message });
   });
 }
+
+exports.loginWithFacebook = (req, res) => {
+  client.verifyIdToken({
+    idToken: req.body.credential,
+    audience: process.env.GOOGLE_CLIENT_ID
+  })
+  .then(async ticket => {
+    const payload = ticket.getPayload();
+    const { email, given_name, family_name } = payload;
+
+    const user = await User.findOrCreate({
+      where: {
+        email: email
+      },
+      defaults: {
+        firstName: given_name,
+        lastName: family_name,
+        email: email,
+        password: null,
+        role: email === process.env.ADMIN_EMAIL ? 'admin' : 'user',
+        personalKey: uuidv4()
+      }
+    });
+
+    if (user[1]) {
+      return user[0].dataValues;
+    }
+
+    return user[0];
+  })
+  .then(user => {
+    try {
+      authJwt.generateToken(res, user.id, user.personalKey, user.email);
+      return res.redirect('/');
+    } catch (error) {
+      res.status(500).send({ message: err.message });
+    }
+  })
+  .catch(err => {
+    res.status(500).send({ message: err.message });
+  });
+}
+
+async function getFacebookUserData(access_token) {
+  const { data } = await axios({
+    url: 'https://graph.facebook.com/me',
+    method: 'get',
+    params: {
+      fields: ['id', 'email', 'first_name', 'last_name'].join(','),
+      access_token: accesstoken,
+    },
+  });
+  console.log(data); // { id, email, first_name, last_name }
+  return data;
+};
