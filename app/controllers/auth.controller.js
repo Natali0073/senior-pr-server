@@ -1,8 +1,9 @@
 var bcrypt = require("bcryptjs");
-const {OAuth2Client} = require('google-auth-library');
+const { OAuth2Client } = require('google-auth-library');
 const { v4: uuidv4 } = require('uuid');
 const { authJwt } = require("../middleware");
 const db = require("../models");
+const axios = require('axios');
 const User = db.user;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -57,7 +58,7 @@ exports.login = (req, res) => {
           reason: 'userBanned'
         });
       }
-      
+
       const passwordIsValid = bcrypt.compareSync(
         req.body.password,
         user.password
@@ -81,7 +82,6 @@ exports.login = (req, res) => {
           role: req.body.role,
           updatedAt: req.body.updatedAt,
         });
-      } catch (error) {
         res.status(500).send({ message: err.message });
       }
     })
@@ -158,87 +158,82 @@ exports.loginWithGoogle = (req, res) => {
     idToken: req.body.credential,
     audience: process.env.GOOGLE_CLIENT_ID
   })
-  .then(async ticket => {
-    const payload = ticket.getPayload();
-    const { email, given_name, family_name } = payload;
+    .then(async ticket => {
+      const payload = ticket.getPayload();
+      const { email, given_name, family_name } = payload;
 
-    const user = await User.findOrCreate({
-      where: {
-        email: email
-      },
-      defaults: {
-        firstName: given_name,
-        lastName: family_name,
-        email: email,
-        password: null,
-        role: email === process.env.ADMIN_EMAIL ? 'admin' : 'user',
-        personalKey: uuidv4()
+      const user = await User.findOrCreate({
+        where: {
+          email: email
+        },
+        defaults: {
+          firstName: given_name,
+          lastName: family_name,
+          email: email,
+          password: null,
+          role: email === process.env.ADMIN_EMAIL ? 'admin' : 'user',
+          personalKey: uuidv4()
+        }
+      });
+
+      if (user[1]) {
+        return user[0].dataValues;
       }
-    });
 
-    if (user[1]) {
-      return user[0].dataValues;
-    }
-
-    return user[0];
-  })
-  .then(user => {
-    try {
-      authJwt.generateToken(res, user.id, user.personalKey, user.email);
-      return res.redirect('/');
-    } catch (error) {
+      return user[0];
+    })
+    .then(user => {
+      try {
+        authJwt.generateToken(res, user.id, user.personalKey, user.email);
+        return res.redirect('/');
+      } catch (error) {
+        res.status(500).send({ message: err.message });
+      }
+    })
+    .catch(err => {
       res.status(500).send({ message: err.message });
-    }
-  })
-  .catch(err => {
-    res.status(500).send({ message: err.message });
-  });
+    });
 }
 
-exports.loginWithFacebook = (req, res) => {
-  client.verifyIdToken({
-    idToken: req.body.credential,
-    audience: process.env.GOOGLE_CLIENT_ID
-  })
-  .then(async ticket => {
-    const payload = ticket.getPayload();
-    const { email, given_name, family_name } = payload;
+exports.loginWithFacebook = async (req, res) => {
+  getFacebookUserData(req.body.accessToken)
+    .then(async payload => {
+      const { email, first_name, last_name } = payload.data;
 
-    const user = await User.findOrCreate({
-      where: {
-        email: email
-      },
-      defaults: {
-        firstName: given_name,
-        lastName: family_name,
-        email: email,
-        password: null,
-        role: email === process.env.ADMIN_EMAIL ? 'admin' : 'user',
-        personalKey: uuidv4()
+      const user = await User.findOrCreate({
+        where: {
+          email: email
+        },
+        defaults: {
+          firstName: first_name,
+          lastName: last_name,
+          email: email,
+          password: null,
+          role: email === process.env.ADMIN_EMAIL ? 'admin' : 'user',
+          personalKey: uuidv4()
+        }
+      });
+
+      if (user[1]) {
+        return user[0].dataValues;
       }
-    });
-
-    if (user[1]) {
-      return user[0].dataValues;
-    }
-
-    return user[0];
-  })
-  .then(user => {
-    try {
-      authJwt.generateToken(res, user.id, user.personalKey, user.email);
-      return res.redirect('/');
-    } catch (error) {
+      return user[0];
+    })
+    .then(user => {
+      try {
+        authJwt.generateToken(res, user.id, user.personalKey, user.email);
+        return res.redirect('/');
+      } catch (error) {
+        res.status(500).send({ message: err.message });
+      }
+    })
+    .catch(err => {
       res.status(500).send({ message: err.message });
-    }
-  })
-  .catch(err => {
-    res.status(500).send({ message: err.message });
-  });
+    });
 }
 
-async function getFacebookUserData(access_token) {
-  const { data } = await axios({
+async function getFacebookUserData(accesstoken) {
+  return await axios({
     url: 'https://graph.facebook.com/me',
     method: 'get',
     params: {
@@ -246,6 +241,4 @@ async function getFacebookUserData(access_token) {
       access_token: accesstoken,
     },
   });
-  console.log(data); // { id, email, first_name, last_name }
-  return data;
 };

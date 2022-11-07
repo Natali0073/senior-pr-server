@@ -18,7 +18,7 @@ module.exports = (app) => {
 
   app.post("/api/auth/login-google", controller.loginWithGoogle);
 
-  app.post("/api/auth/login-fb", controller.loginWithFacebook);
+  app.post("/api/auth/login-facebook", controller.loginWithFacebook);
 
   app.post("/api/auth/logout", [authJwt.verifyTokenCookies], controller.logout);
 

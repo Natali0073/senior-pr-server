@@ -3,11 +3,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const http = require("http");
-const Server = require('socket.io');
 const app = express();
-// const httpServer = new http.Server(app);
-// const io = new Server(httpServer, { cors: { origin: '*' } });
 const httpServer = require("http").createServer(app);
 const ioSocket = require("socket.io")(httpServer, {
   cors: {
