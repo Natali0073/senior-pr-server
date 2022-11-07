@@ -82,6 +82,7 @@ exports.login = (req, res) => {
           role: req.body.role,
           updatedAt: req.body.updatedAt,
         });
+      } catch (error) {
         res.status(500).send({ message: err.message });
       }
     })
