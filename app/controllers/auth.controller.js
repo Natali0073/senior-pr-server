@@ -161,7 +161,7 @@ exports.loginWithGoogle = (req, res) => {
   })
     .then(async ticket => {
       const payload = ticket.getPayload();
-      const { email, given_name, family_name } = payload;
+      const { email, given_name, family_name, picture } = payload;
 
       const user = await User.findOrCreate({
         where: {
@@ -173,6 +173,7 @@ exports.loginWithGoogle = (req, res) => {
           email: email,
           password: null,
           role: email === process.env.ADMIN_EMAIL ? 'admin' : 'user',
+          avatar: picture || null,
           personalKey: uuidv4()
         }
       });
@@ -223,7 +224,7 @@ exports.loginWithFacebook = async (req, res) => {
     .then(user => {
       try {
         authJwt.generateToken(res, user.id, user.personalKey, user.email);
-        return res.redirect('/');
+        return res.status(200).send({ message: 'Facebook auth successfull' });
       } catch (error) {
         res.status(500).send({ message: err.message });
       }
