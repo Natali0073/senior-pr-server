@@ -7,7 +7,7 @@ const app = express();
 const httpServer = require("http").createServer(app);
 const ioSocket = require("socket.io")(httpServer, {
   cors: {
-    origin: "http://localhost:4200",
+    origin: process.env.CLIENT_SIDE_URL,
     methods: ["GET", "POST", "PUT"]
   }
 });
@@ -16,7 +16,7 @@ exports.io = ioSocket;
 const PORT = process.env.API_PORT || 3000;
 
 const corsOptions = {
-  origin: "http://localhost:4200"
+  origin: process.env.CLIENT_SIDE_URL
 };
 
 app.use(cors(corsOptions));

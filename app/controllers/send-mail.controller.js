@@ -25,7 +25,7 @@ const sendEmail = async (mailObj) => {
       userName: user.firstName,
       userEmail: userEmail,
       expiresIn: resetToken.expiresIn,
-      redirectionLink: `http://localhost:4200/#/reset-password/${resetToken.token}`,
+      redirectionLink: `${process.env.CLIENT_SIDE_URL}/#/reset-password/${resetToken.token}`,
     };
     const htmlToSend = template(replacements);
 
