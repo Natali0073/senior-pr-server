@@ -21,13 +21,7 @@ exports.register = (req, res) => {
     .then(user => {
       try {
         authJwt.generateToken(res, user.id, user.personalKey, user.email);
-
-        res.status(200).send({
-          id: user.id,
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          email: user.email
-        });
+        res.status(200).send({message: 'Account created successfully'});
       } catch (error) {
         res.status(500).send({ message: err.message });
       }
@@ -72,16 +66,7 @@ exports.login = (req, res) => {
       try {
         authJwt.generateToken(res, user.id, user.personalKey, user.email);
 
-        res.status(200).send({
-          avatar: req.body.avatar,
-          createdAt: req.body.createdAt,
-          email: req.body.email,
-          firstName: req.body.firstName,
-          id: user.id,
-          lastName: req.body.lastName,
-          role: req.body.role,
-          updatedAt: req.body.updatedAt,
-        });
+        res.status(200).send({});
       } catch (error) {
         res.status(500).send({ message: err.message });
       }
@@ -130,6 +115,11 @@ exports.changePassword = (req, res) => {
   }).then(user => {
     if (!user) {
       return res.status(404).send({ message: "User Not found." });
+    }
+
+    if (!user.password) {
+      res.status(400).send({ message: "Old password is invalid" });
+      return;
     }
     const oldPasswordIsValid = bcrypt.compareSync(
       req.body.oldPassword,
