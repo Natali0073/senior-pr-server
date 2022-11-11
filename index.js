@@ -16,7 +16,7 @@ exports.io = ioSocket;
 const PORT = process.env.API_PORT || 3000;
 
 const corsOptions = {
-  origin: process.env.CLIENT_SIDE_URL
+  origin: ["http://localhost:4200", "https://natali0073.github.io"],
 };
 
 app.use(cors(corsOptions));
