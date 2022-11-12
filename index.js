@@ -7,7 +7,7 @@ const app = express();
 const httpServer = require("http").createServer(app);
 const ioSocket = require("socket.io")(httpServer, {
   cors: {
-    origin: ["http://localhost:4200", "http://localhost:80", "https://natali0073.github.io"],
+    origin: ["http://localhost:4200", "http://localhost", "https://natali0073.github.io"],
     credentials: true
   }
 });
