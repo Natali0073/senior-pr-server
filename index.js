@@ -7,7 +7,7 @@ const app = express();
 const httpServer = require("http").createServer(app);
 const ioSocket = require("socket.io")(httpServer, {
   cors: {
-    origin: process.env.CLIENT_SIDE_URLS.split(','),
+    origin: ["http://localhost:4200", "https://natali0073.github.io"],
     credentials: true
   }
 });
@@ -16,7 +16,7 @@ exports.io = ioSocket;
 const PORT = process.env.API_PORT || 3000;
 
 const corsOptions = {
-  origin: process.env.CLIENT_SIDE_URLS.split(','),
+  origin: ["http://localhost:4200", "https://natali0073.github.io"],
 };
 
 app.use(cors(corsOptions));
