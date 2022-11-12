@@ -144,5 +144,6 @@ const mapChat = (chat, users) => ({
   lastMessageText: chat.lastMessageText || '',
   updatedAt: chat.updatedAt,
   name: (users || chat.users || [])[0].fullName,
-  icon: (users || chat.users || [])[0].avatar
+  icon: (users || chat.users || [])[0].avatar,
+  chatBanned: (users || chat.users || [])[0].isBanned
 });
