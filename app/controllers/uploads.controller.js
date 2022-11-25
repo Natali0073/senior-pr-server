@@ -6,6 +6,7 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 })
 
+// TODO: remove?
 exports.uploadAvatar = (req, res) => {
   uploadFile(req, 'users-avatars', res);
 };
@@ -13,7 +14,7 @@ exports.uploadAvatar = (req, res) => {
 exports.uploadFile = async (req, folderName, res, next) => {
   const params = {
     Bucket: process.env.BUCKET_NAME,
-    Key: `${folderName}/${req.file.filename}_${req.file.originalname}`,
+    Key: `${folderName}/${Date.now()}_${req.file.originalname}`,
     Body: req.file.buffer
   };
 
