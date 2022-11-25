@@ -5,9 +5,10 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const app = express();
 const httpServer = require("http").createServer(app);
+const CORS_LIST = JSON.parse(process.env.CLIENT_SIDE_URLS);
 const ioSocket = require("socket.io")(httpServer, {
   cors: {
-    origin: ["http://localhost:4200", "http://localhost", "https://www.web-chat.store"],
+    origin: CORS_LIST,
     credentials: true
   }
 });
@@ -16,7 +17,7 @@ exports.io = ioSocket;
 const PORT = process.env.API_PORT || 3000;
 
 const corsOptions = {
-  origin: ["http://localhost:4200", "http://localhost:80", "https://www.web-chat.store"],
+  origin: CORS_LIST,
 };
 
 app.use(cors(corsOptions));
