@@ -177,7 +177,7 @@ exports.loginWithGoogle = (req, res) => {
     .then(user => {
       try {
         authJwt.generateToken(res, user.id, user.personalKey, user.email);
-        return res.redirect('/');
+        return res.status(200).send({ message: 'Google auth successfull' });
       } catch (error) {
         res.status(500).send({ message: err.message });
       }
@@ -190,7 +190,7 @@ exports.loginWithGoogle = (req, res) => {
 exports.loginWithFacebook = async (req, res) => {
   getFacebookUserData(req.body.accessToken)
     .then(async payload => {
-      const { email, first_name, last_name } = payload.data;
+      const { email, first_name, last_name, picture } = payload.data;
 
       const user = await User.findOrCreate({
         where: {
@@ -202,6 +202,7 @@ exports.loginWithFacebook = async (req, res) => {
           email: email,
           password: null,
           role: email === process.env.ADMIN_EMAIL ? 'admin' : 'user',
+          avatar: picture && picture.data && picture.data.url || null,
           personalKey: uuidv4()
         }
       });
@@ -229,7 +230,7 @@ async function getFacebookUserData(accesstoken) {
     url: 'https://graph.facebook.com/me',
     method: 'get',
     params: {
-      fields: ['id', 'email', 'first_name', 'last_name'].join(','),
+      fields: ['id', 'email', 'first_name', 'last_name', 'picture.type(large)'].join(','),
       access_token: accesstoken,
     },
   });
