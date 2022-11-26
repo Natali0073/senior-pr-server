@@ -29,6 +29,16 @@ module.exports = (sequelize, Sequelize) => {
     avatar: {
       type: Sequelize.STRING
     },
+    avatarFileName: {
+      type: Sequelize.VIRTUAL,
+      get() {
+        const result = this.avatar?.substring(this.avatar?.lastIndexOf('/') + 1);
+        return result ? result : undefined;
+      },
+      set(value) {
+        throw new Error('Do not try to set the `avatarFileName` value!');
+      }
+    },
     role: {
       type: Sequelize.STRING
     },

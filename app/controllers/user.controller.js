@@ -81,7 +81,11 @@ exports.updatePersonalInfo = (req, res, next) => {
     }
     if (req.file) {
       try {
-        const uploadResponse = await uploadController.uploadFile(req, 'users-avatars', res, next)
+        const uploadResponse = await uploadController.uploadFile(req, 'users-avatars', res, next);
+        if (uploadResponse && user.avatarFileName) {
+          await uploadController.deleteFile('users-avatars', `${user.avatarFileName}`);
+        }
+        
         updateCurrentUser(req, res, user, uploadResponse);
 
       } catch (error) {
