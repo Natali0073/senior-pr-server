@@ -35,7 +35,6 @@ exports.login = (req, res) => {
   if (req.body.password === null) {
     return res.status(404).send({ message: "No password" });
   }
-
   User.findOne({
     where: {
       email: req.body.email
@@ -50,6 +49,13 @@ exports.login = (req, res) => {
         return res.status(403).send({
           message: "User is banned",
           reason: 'userBanned'
+        });
+      }
+
+      if (!user.password) {
+        return res.status(401).send({
+          accessToken: null,
+          message: "Credentials not found!"
         });
       }
 
