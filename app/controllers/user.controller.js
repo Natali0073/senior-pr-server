@@ -31,7 +31,7 @@ exports.users = (req, res) => {
           })
       ]
     },
-    order: [['firstName', 'DESC']],
+    order: [['firstName', 'ASC']],
     offset: offset,
     limit: limit,
   }).then(data => {
